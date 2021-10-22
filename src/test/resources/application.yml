@@ -1,0 +1,35 @@
+server:
+  servlet:
+    context-path: /
+  port: 8080
+
+security:
+  debug: true
+  basic:
+    enabled: false
+  oauth2:
+    resource:
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+
+spring:
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI}
+  jackson:
+    date-format: com.myretail.catalog.RFC3339DateFormat
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    default-property-inclusion: NON_NULL
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+protected:
+  headers:
+    - wamauth
+    - Authorization

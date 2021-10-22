@@ -1,0 +1,64 @@
+server:
+  servlet:
+    context-path: /v1
+  port: 8080
+  tomcat:
+    accesslog:
+      enabled: true
+      pattern: '%h %l %u %t "%r" %s %b "%{X-Forwarded-For}i"'
+  use-forward-headers: true
+
+management:
+  server:
+    port: 9000
+    servlet:
+      context-path: /manage
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    db:
+      enabled: false
+    mongo:
+      enabled: false
+
+info:
+  build:
+    artifact: '@project.artifactId@'
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+
+security:
+  debug: true
+  oauth2:
+    resource:
+spring:
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI}
+  jackson:
+    date-format: com.myretail.catalog.RFC3339DateFormat
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    default-property-inclusion: non-null
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  application:
+    name: catalog
+  boot:
+    admin:
+      client:
+        url: http://bootadmin:8080
+        instance:
+          prefer-ip: true
+        period: 60000

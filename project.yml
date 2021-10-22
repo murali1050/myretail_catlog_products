@@ -1,0 +1,17 @@
+metadata:
+  name: catalog
+  image: containers.myretail.com/it_myretail_architecture/catalog
+  apifile: api.yml
+  version: 0.1.0
+  pretag: dev
+  versioned:
+  - filename: pom.xml
+    search: ^  <version>${VERSION}</version>
+    replace: '  <version>${NEXT_VERSION}</version>'
+  - filename: api.yml
+    search: 'version: "${VERSION}"'
+    replace: 'version: "${NEXT_VERSION}"'
+  instances:
+    dev: 1
+    stg: 1
+    prd: 1

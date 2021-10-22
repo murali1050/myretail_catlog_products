@@ -1,0 +1,84 @@
+PROJECT_FILE = project.yml
+export PROJECT = $(shell awk '/name: / { print $$2; exit }' ${PROJECT_FILE})
+export IMAGE_NAME ?= $(shell awk '/image: / { print $$2; exit }' ${PROJECT_FILE})
+export VERSION = $(shell awk '/version: / { print $$2; exit }' ${PROJECT_FILE})
+export PRERELEASE ?= $(shell awk '/pretag: / { print $$2; exit }' ${PROJECT_FILE})
+API_FILE = $(shell awk '/apifile: / { print $$2; exit }' ${PROJECT_FILE})
+
+# use environment variable inputs for deployment
+# NS = CAE project name
+# AZ = CAE availability zone (rtp, rcdn, alln, local)
+# USER = CAE project admin username (CEC)
+# PWD = CAE project admin password (CEC)
+# LIFECYCLE = prd, nprd, local configuration (nprd is default)
+# BOT_PWD_MASK = Container Hub password for bot account; used to pull private images
+# REGISTRY_TOKEN = Container Hub password token for your account (local use only); used to pull private images
+DEPLOY_NS ?=
+DEPLOY_AZ ?=
+DEPLOY_USER ?=
+DEPLOY_PWD ?=
+LIFECYCLE ?= nprd
+LOCAL_CLUSTER ?=
+BOT_PWD_MASK ?=
+REGISTRY_TOKEN ?=
+
+
+DEVELOPER ?= $(shell whoami)
+
+JENKINS_HOME ?=
+ifeq ($(strip $(JENKINS_HOME)),)
+    CI_ENABLED := 0
+else
+    CI_ENABLED := 1
+endif
+
+RELEASE_TYPE ?=
+TAG_TYPE ?= ${PRERELEASE}
+
+# Windows environment?
+CYG_CHECK := $(shell hash cygpath 2>/dev/null && echo 1)
+# WSL environment?
+WSL_CHECK := $(shell grep -qE "Microsoft" /proc/version 2>/dev/null && echo 1)
+ifeq ($(CYG_CHECK),1)
+	VBOX_CHECK := $(shell hash VBoxManage 2>/dev/null && echo 1)
+
+	# Docker Toolbox (pre-Windows 10)
+	ifeq ($(VBOX_CHECK),1)
+		ROOT := /${PROJECT}
+	else
+		# Docker Windows
+		ROOT := $(shell cygpath -m -a "$(shell pwd)")
+	endif
+else ifeq ($(WSL_CHECK),1)
+	# requires drives shared in Docker for Windows settings
+	ROOT := $(strip $(shell cmd.exe /c cd | sed -e 's/\\/\//g'))
+else
+	# all non-windows environments
+	ROOT := $(shell pwd)
+endif
+
+DEV_IMAGE := ${PROJECT}_dev
+
+DOCKERRUN := docker run --rm \
+	-v ${ROOT}/mvn-repo:/root/.m2 \
+	-v ${ROOT}:/${PROJECT} \
+	-w /${PROJECT} \
+	${DEV_IMAGE}
+
+DOCKERNOVENDOR := docker run --rm -i \
+	-e PROJECT_FILE="${PROJECT_FILE}" \
+	-e VERSION="${VERSION}" \
+	-e PRERELEASE="${PRERELEASE}" \
+	-e RELEASE_TYPE="${RELEASE_TYPE}" \
+	-e TAG_TYPE="${TAG_TYPE}" \
+	-e DEPLOY_NS="${DEPLOY_NS}" \
+	-e DEPLOY_AZ="${DEPLOY_AZ}" \
+	-e DEPLOY_USER="${DEPLOY_USER}" \
+	-e DEPLOY_PWD="${DEPLOY_PWD}" \
+	-e LIFECYCLE="${LIFECYCLE}" \
+	-e LOCAL_CLUSTER="${LOCAL_CLUSTER}" \
+	-e BOT_PWD_MASK="${BOT_PWD_MASK}" \
+	-e REGISTRY_TOKEN="${REGISTRY_TOKEN}" \
+	-v ${ROOT}:/${PROJECT} \
+	-w /${PROJECT} \
+	${DEV_IMAGE}

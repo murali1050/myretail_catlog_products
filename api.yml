@@ -1,0 +1,166 @@
+swagger: '2.0'
+info:
+  version: "0.1.0"
+  title: My Retail Catalog Service
+  description: Get Product details and pricing details for the given product IDs 
+
+schemes:
+  - http
+
+produces:
+  - application/json
+
+tags:
+  - name: catalog
+
+# API versioning (Major Version)
+basePath: /v1
+
+paths:
+    /product/{productId}:
+      get:
+        tags: [catalog]
+        summary: Retrieves the product details for the productId.
+        operationId: retreiveProduct
+        description: Retrieves the product details based on product ID.
+        parameters:
+          - name: productId
+            in: path
+            required: true
+            type: string
+        responses:
+          200:
+            description: Operation Successful
+            schema:
+                  $ref: '#/definitions/Product'
+          400:
+            description: Bad Request
+            schema:
+                  $ref: "#/definitions/error_response"
+          403:
+            description: Application Exception
+            schema:
+                  $ref: "#/definitions/error_response"
+          500:
+            description: Internal server error
+            schema:
+                  $ref: "#/definitions/error_response"
+      put:
+        tags: [catalog]
+        summary: Add / update given product details to the backend.
+        operationId: updateProduct
+        description: |
+          Add product details or update the product based on the given product ID.
+        parameters:
+          - name: body
+            in: body
+            description: Request Body
+            required: true
+            schema:
+              $ref:  "#/definitions/productRequest"
+        responses:
+          200:
+            description: Response
+            schema:
+              $ref:  "#/definitions/Product"
+          400:
+            description: Invalid Request Error
+            examples:
+              error:
+                message: "Invalid Input"
+            schema:
+              $ref: "#/definitions/error_response"
+          500:
+            description: Internal Server Error
+            examples:
+              error:
+                message: "Internal Server Error"
+            schema:
+              $ref: "#/definitions/error_response"
+
+definitions:
+    #Product response
+    product:
+      title: Product Details.
+      description: Product details based on product ID.
+      type: object
+      properties:
+          status:
+            title: The status of the transaction
+            description: Returns the success or failure.
+            type: string
+          pid:
+            title: Product ID.
+            description: Product ID of the product (unique).
+            type: Long
+          name:
+            title: name.
+            description: Name of the Product.
+            type: string
+          current_price:
+             $ref: "#/definitions/current_price"
+          error_response:
+             $ref: "#/definitions/error_response"
+    current_price:
+      title: Current Price.
+      description: Current Price of the Product.
+      type: object
+      properties:
+          value:
+            title: Value
+            description: Value of the product.
+            type: string
+          currency_code:
+            title: Currency Code.
+            description: Currency format of the product.
+            type: string
+    productRequest:
+      title: Product Request Details.
+      description: Product request details for Add or Update.
+      type: object
+      properties:
+          pid:
+            title: Product ID.
+            description: Product ID of the product (unique).
+            type: Long
+          name:
+            title: name.
+            description: Name of the Product.
+            type: string
+          value:
+            title: Value
+            description: Value of the product.
+            type: Double
+          currency_code:
+            title: Currency Code.
+            description: Currency format of the product.
+            type: string
+    #Error response
+    error_response:
+      title: Error Response
+      description: Error Response
+      type: object
+      properties:
+        error:
+          $ref: "#/definitions/error"
+    error:
+      title: Error
+      description: Error content
+      type: object
+      properties:
+        code:
+          title: Error Code
+          description: Error Code
+          type: integer
+        message:
+          title: Error Message
+          description: Error Message
+          type: string
+        title:
+          title: Error title
+          description: Error title
+          type: string
+        productId:
+          title: productId
+          description: productId
+          type: string

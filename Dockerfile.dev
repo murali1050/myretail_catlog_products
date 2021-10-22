@@ -1,0 +1,47 @@
+FROM openjdk:11-jdk
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gettext-base \
+        unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV YAML_BIN_VERSION 1.13.1
+ENV JQ_BIN_VERSION 1.5
+ENV OPENSHIFT_VERSION v3.9.0
+ENV OPENSHIFT_HASH 191fece
+
+RUN wget -O /usr/local/bin/jq "https://github.com/stedolan/jq/releases/download/jq-${JQ_BIN_VERSION}/jq-linux64" \
+    && chmod 755 /usr/local/bin/jq \
+    && wget -O /usr/local/bin/yaml "https://github.com/mikefarah/yq/releases/download/${YAML_BIN_VERSION}/yaml_linux_amd64" \
+    && chmod 755 /usr/local/bin/yaml \
+    && wget --no-check-certificate -q https://raw.github.com/petervanderdoes/gitflow/develop/contrib/gitflow-installer.sh \
+    && bash gitflow-installer.sh install develop \
+    && rm gitflow-installer.sh \
+    && rm -rf gitflow/ \
+    && wget -O /tmp/client-tools.tar.gz "https://github.com/openshift/origin/releases/download/${OPENSHIFT_VERSION}/openshift-origin-client-tools-${OPENSHIFT_VERSION}-${OPENSHIFT_HASH}-linux-64bit.tar.gz" \
+    && tar zxf /tmp/client-tools.tar.gz --strip-components=1 -C /usr/local/bin \
+    && rm -rf /tmp/client-tools.tar.gz \
+    && wget -O /tmp/dinamo.zip https://github.com/kenjones-cisco/dinamo/releases/download/0.2.0/dinamo_0.2.0_linux_amd64.zip \
+    && unzip /tmp/dinamo.zip -d /usr/local/bin \
+    && chmod 755 /usr/local/bin/dinamo \
+    && rm -rf /tmp/dinamo.zip
+
+ARG DEVELOPER
+
+RUN git config --global user.name "${DEVELOPER}" \
+    && git config --global user.email "${DEVELOPER}@cisco.com" \
+    && git config --global core.fileMode false \
+    && git config --list
+
+ENV MAVEN_VERSION 3.6.3
+ENV MAVEN_HOME /usr/share/maven
+ENV JAVA_FORMATER_VERSION 1.10.0
+
+RUN mkdir -p /usr/share/maven \
+    && wget https://apache.osuosl.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
+        -O /tmp/apache-maven.tar.gz \
+    && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
+    && rm -f /tmp/apache-maven.tar.gz \
+    && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
+    && wget https://github.com/google/google-java-format/releases/download/v$JAVA_FORMATER_VERSION/google-java-format-$JAVA_FORMATER_VERSION-all-deps.jar \
+        -O /opt/java-formater.jar

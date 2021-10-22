@@ -1,0 +1,12 @@
+{
+  "artifactId": "catalog",
+  "groupId": "com.myretail.catalog",
+  "basePackage": "com.myretail.catalog",
+  "apiPackage": "com.myretail.catalog.api",
+  "configPackage": "com.myretail.catalog.config",
+  "modelPackage": "com.myretail.catalog.model",
+  "hideGenerationTimestamp": true,
+  "java8": true,
+  "useBeanValidation": true,
+  "licenseUrl": ""
+}

@@ -1,0 +1,66 @@
+apiVersion: v1
+clusters:
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://cae-np-alln.xxxx.com:443
+  name: cae-np-alln-xxxx-com:443
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://cae-prd-alln.xxxx.com:443
+  name: cae-prd-alln-xxxx-com:443
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://cae-np-rcdn.xxxx.com:443
+  name: cae-np-rcdn-xxxx-com:443
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://cae-prd-rcdn.xxxx.com:443
+  name: cae-prd-rcdn-xxxx-com:443
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://cae-np-rtp.xxxx.com:443
+  name: cae-np-rtp-xxxx-com:443
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://cae-prd-rtp.xxxx.com:443
+  name: cae-prd-rtp-xxxx-com:443
+- cluster:
+    insecure-skip-tls-verify: true
+    server: {{ .INSTANCE }}
+  name: {{ .INSTANCE_NAME }}
+contexts:
+- context:
+    cluster: cae-np-alln-xxxx-com:443
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/cae-np-alln-xxxx-com:443
+  name: {{ .NAMESPACE }}/cae-np-alln-xxxx-com:443/{{ .USERNAME }}
+- context:
+    cluster: cae-prd-alln-xxxx-com:443
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/cae-prd-alln-xxxx-com:443
+  name: {{ .NAMESPACE }}/cae-prd-alln-xxxx-com:443/{{ .USERNAME }}
+- context:
+    cluster: cae-np-rcdn-xxxx-com:443
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/cae-np-rcdn-xxxx-com:443
+  name: {{ .NAMESPACE }}/cae-np-rcdn-xxxx-com:443/{{ .USERNAME }}
+- context:
+    cluster: cae-prd-rcdn-xxxx-com:443
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/cae-prd-rcdn-xxxx-com:443
+  name: {{ .NAMESPACE }}/cae-prd-rcdn-xxxx-com:443/{{ .USERNAME }}
+- context:
+    cluster: cae-np-rtp-xxxx-com:443
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/cae-np-rtp-xxxx-com:443
+  name: {{ .NAMESPACE }}/cae-np-rtp-xxxx-com:443/{{ .USERNAME }}
+- context:
+    cluster: cae-prd-rtp-xxxx-com:443
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/cae-prd-rtp-xxxx-com:443
+  name: {{ .NAMESPACE }}/cae-prd-rtp-xxxx-com:443/{{ .USERNAME }}
+- context:
+    cluster: {{ .INSTANCE_NAME }}
+    namespace: {{ .NAMESPACE }}
+    user: {{ .USERNAME }}/{{ .INSTANCE_NAME }}
+  name: {{ .NAMESPACE }}/{{ .INSTANCE_NAME }}/{{ .USERNAME }}
