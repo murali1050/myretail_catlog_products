@@ -11,21 +11,16 @@ public class Utilities {
 
   /** generate unique product id. */
   public static Long getSeqTrackString() {
-    try {
-      String seqChars = "1234567890";
-      Long currtime = new Date().getTime();
-      StringBuilder trackstring = new StringBuilder();
-      Random rnd = new Random();
-      while (trackstring.length() < 9) { // length of the random string.
-        int index = (int) (rnd.nextFloat() * seqChars.length());
-        trackstring.append(seqChars.charAt(index));
-      }
-      Long trackLong = Long.parseLong(trackstring.toString()) + currtime;
-      log.debug("Generated unique product ID is {}", trackLong);
-      return trackLong;
-    } catch (Exception exp) {
-      log.error("Error while generating product id");
+    String seqChars = "1234567890";
+    Long currtime = new Date().getTime();
+    StringBuilder trackstring = new StringBuilder();
+    Random rnd = new Random();
+    while (trackstring.length() < 9) { // length of the random string.
+      int index = (int) (rnd.nextFloat() * seqChars.length());
+      trackstring.append(seqChars.charAt(index));
     }
-    return 0L;
+    Long trackLong = Long.parseLong(trackstring.toString()) + currtime;
+    log.debug("Generated unique product ID is {}", trackLong);
+    return trackLong;
   }
 }
